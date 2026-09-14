@@ -90,6 +90,14 @@ class WorldTests(unittest.TestCase):
         saved = self.store.save("recovered", first.name)
         self.assertTrue((saved / "map.sqlite").exists())
 
+    def test_long_saved_name_still_allows_session_recovery(self):
+        self.store.create()
+        name = "a" * 64
+        self.store.save(name)
+        resumed = self.store.create(name)
+        saved = self.store.save("recovered-long-session", resumed.name)
+        self.assertTrue((saved / "world.mt").exists())
+
     def test_invalid_names_and_pointer_cannot_escape_world_store(self):
         for name in ("../outside", ".", "", "/tmp/outside", "a/b"):
             with self.assertRaises(WorldError): self.store.create(name)

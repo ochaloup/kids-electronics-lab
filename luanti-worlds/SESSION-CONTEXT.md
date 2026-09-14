@@ -10,8 +10,8 @@ with a way to preserve and reopen selected worlds. This supersedes the original
 
 Implemented behavior:
 
-- `edu_village_river_01` is now a **clean template**: configs and worldmods only
-  (plus an ignored zero-length session lock). No SQLite player/map/mod-storage
+- `edu_village_river_01` is now a **clean template**: configs and worldmods only.
+  No SQLite player/map/mod-storage
   databases or generated runtime files remain there.
 - Before clearing it, the full original practice world was preserved as
   `saved-worlds/attempts-2026-09-14`. This includes the user's robot programs,
@@ -67,6 +67,12 @@ isolation during resumed play, rejecting duplicate save names, recovery of
 older sessions, refusing running/open-database snapshots, and path-name checks.
 The tests are in `test_worlds.py` and run with
 `python3 luanti-worlds/test_worlds.py`.
+
+Actual Luanti lifecycle checks passed in an isolated fixture: start fresh and
+execute the bridge loop; save the completed world; start fresh again and verify
+an empty bridge, empty robot program and 64 planks; reopen the named save and
+verify the six completed bridge blocks and 58 remaining robot planks. All three
+servers exited cleanly. Empty passwords were also verified as permitted.
 
 The remainder records the original implementation context; use the latest
 workflow above and the current README/scripts for operational commands.

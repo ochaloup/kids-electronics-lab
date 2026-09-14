@@ -22,3 +22,9 @@ luanti-worlds/**/*.log
 luanti-worlds/**/*.log.*
 luanti-worlds/*.conf.bak
 luanti-worlds/.tests/
+luanti-worlds/sessions/
+luanti-worlds/saved-worlds/
+luanti-worlds/.latest-session*
+luanti-worlds/.host.lock
+luanti-worlds/.worlds.lock
+luanti-worlds/__pycache__/

@@ -40,9 +40,9 @@ class WorldStore:
         self.pointer = self.root / ".latest-session"
 
     @staticmethod
-    def name(value):
-        if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}", value):
-            raise WorldError("Use a save name of 1–64 letters, numbers, dots, dashes or underscores, starting with a letter or number.")
+    def name(value, maximum=64):
+        if len(value) > maximum or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", value):
+            raise WorldError(f"Use a name of 1–{maximum} letters, numbers, dots, dashes or underscores, starting with a letter or number.")
         return value
 
     def check_template(self):
@@ -133,7 +133,7 @@ class WorldStore:
 
     def save(self, name, session=None):
         with lock(self.root / ".host.lock"), lock(self.root / ".worlds.lock"):
-            world = self.latest() if session is None else self.sessions / self.name(session)
+            world = self.latest() if session is None else self.sessions / self.name(session, maximum=160)
             if not (world / "world.mt").is_file():
                 raise WorldError(f"Session not found: {world.name}")
             with self.stopped(world):

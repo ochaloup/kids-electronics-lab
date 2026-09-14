@@ -2,7 +2,11 @@
 # shellcheck source-path=SCRIPTDIR
 set -euo pipefail
 worlds_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-if (($# > 1)) || [[ "${1:-}" == --help || "${1:-}" == -h ]]; then
+if (($# > 1)); then
+  echo "Usage: $0 [SAVED_WORLD_NAME]" >&2
+  exit 1
+fi
+if [[ "${1:-}" == --help || "${1:-}" == -h ]]; then
   echo "Usage: $0 [SAVED_WORLD_NAME]"
   echo "No name: start a brand new teaching world. Name: start a copy of that saved world."
   exit 0

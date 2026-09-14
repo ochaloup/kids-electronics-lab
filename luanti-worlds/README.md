@@ -323,3 +323,13 @@ a repeat install reused the downloaded game; and an incomplete existing game
 directory was refused without changing its contents. System-package and Flatpak
 installation on a fresh laptop have not been exercised here because this laptop
 already has those requirements.
+
+The fresh/save/resume lifecycle was checked with real Luanti servers in an
+isolated fixture: a loop built the bridge, the finished world was saved, the next
+default start had an empty bridge and unprogrammed robot, and loading the named
+save restored the completed bridge and robot storage. All servers shut down
+cleanly. Persistence/controller checks run with:
+
+```sh
+python3 luanti-worlds/test_worlds.py
+```
