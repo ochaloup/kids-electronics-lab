@@ -1,7 +1,68 @@
 # Luanti programming worlds
 
-The world lives in this project, including the scenario source and installed
-LWScratch mods. Luanti's world directory contains a symlink to it.
+The clean world template and installed LWScratch mods live in
+`edu_village_river_01`. Each launch creates a separate playable copy in
+`sessions`. Named snapshots live in `saved-worlds`. Luanti's world directory
+links to a session, so playing does not change the template.
+
+## Fresh starts and named saves
+
+The default server command starts a **brand new teaching world every time**:
+
+```sh
+./luanti-worlds/server.sh
+```
+
+"New" means the village, river, and robots are freshly generated, with no player
+builds or robot programs from earlier sessions. It is not a blank landscape.
+Player inventories and accounts are fresh too; passwords are optional.
+
+When you want to keep a lesson's progress, stop the server with Ctrl+C or
+`/shutdown`, then give the latest session a name:
+
+```sh
+./luanti-worlds/save-world.sh lesson-1
+```
+
+To continue that saved world later:
+
+```sh
+./luanti-worlds/server.sh lesson-1
+```
+
+This opens a **copy** of `saved-worlds/lesson-1`; the saved snapshot remains
+unchanged. After continuing, stop and save with a new name, such as `lesson-2`.
+Existing save names are never overwritten. Saved worlds include builds, robot
+programs/storage, cassette data, inventories and accounts.
+
+To see named saves and previous session IDs:
+
+```sh
+./luanti-worlds/list-worlds.sh
+```
+
+Previous session folders are retained even if you start another fresh world.
+If you forgot to name a save before the next start, you can recover an older
+stopped session using its ID from the list:
+
+```sh
+./luanti-worlds/save-world.sh recovered-lesson --session SESSION_ID
+```
+
+Saving a running world is refused: stop it first so all SQLite data is saved
+consistently. Only one session can be hosted by these launchers at a time;
+you can still join that host normally as a client.
+
+Your original practice world was preserved as **attempts-2026-09-14** before
+its player data was removed from the template. To revisit it:
+
+```sh
+./luanti-worlds/server.sh attempts-2026-09-14
+```
+
+`sessions` and `saved-worlds` are ignored by Git. Copy them separately when you
+want to transfer progress to another laptop. Sessions accumulate on disk; no
+automatic cleanup is performed. The Python controller is `worlds.py`.
 
 ## Play
 
@@ -13,21 +74,28 @@ From the project root:
 
 This opens **Programming Village - LWScratch** directly, using its dedicated
 configuration. Your existing VoxeLibre Flatpak installation supplies the game.
-The village is generated on the first start; give it a moment to appear.
+Each invocation starts a fresh session; give the village a moment to appear.
+To explore a saved world in singleplayer:
+
+```sh
+./luanti-worlds/play.sh --saved lesson-1
+```
 
 The link is:
 
 ```text
 ~/.var/app/org.luanti.luanti/.minetest/worlds/edu_village_river_01
-  -> /home/chalda/my-testing/kids-electronics-lab/luanti-worlds/edu_village_river_01
+  -> /path/to/this/project/luanti-worlds/sessions/SESSION_ID
 ```
 
 If you move this project, update the link and Flatpak permission with
 `./luanti-worlds/link-world.sh`. The script refuses to replace a different
-existing world. Flatpak is granted access only to this project's `luanti-worlds`
-folder. Game saves and logs are written into the project world folder.
+existing world. A link already managed by this project is updated to the
+selected session. Flatpak is granted access only to this project's
+`luanti-worlds` folder. Game data and logs are written into the session folder.
 
-You can also select the world from Luanti's normal menu. The scenario enforces
+Selecting the linked world from Luanti's normal menu continues that linked
+session. To get a fresh world, use the launchers. The scenario enforces
 daylight, disabled damage/PvP/hunger, and disabled natural mob/weather cycles.
 The launcher additionally supplies a small singlenode map and separate client
 settings. For shared play, use the server launcher below.
@@ -81,15 +149,15 @@ can be opened by only one host at a time. Then, from the project root:
 ./luanti-worlds/server.sh
 ```
 
-Leave this terminal running during the lesson. The server uses the same world,
-including existing builds and robots, and listens on **UDP port 30001**. Stop it
+Leave this terminal running during the lesson. The server starts a fresh world
+unless you provide a saved-world name, and listens on **UDP port 30001**. Stop it
 with **Ctrl+C**; it saves the world as it shuts down. The laptop must remain on
 and awake. The launcher prints current Ethernet/Wi-Fi addresses. Configuration
-is in `luanti-worlds/server.conf`; logs are in the world's `server.log`.
+is in `luanti-worlds/server.conf`; logs are in that session's `server.log`.
 
 You can play on the laptop while the dedicated server runs: open Luanti normally,
 choose **Join Game**, and connect to `127.0.0.1`, port `30001`. Register the name
-**ondra** and choose a password on the first connection. That name is configured
+**ondra** on the first connection; a password is optional. That name is configured
 as the administrator and can use `/edu_reset_bridge`, `/edu_rebuild_village`,
 and `/shutdown`. Use the same password on later connections. The earlier
 singleplayer identity was `singleplayer`; `ondra` starts with a new inventory
@@ -106,7 +174,7 @@ and receives a robot kit.
 3. Open Luanti and choose **Join Game**. A game-install prompt is for local play;
    it is not necessary to install a game to join this server.
 4. Enter the laptop's LAN address and port `30001`.
-5. Register a different player name for each child, with their own password.
+5. Register a different player name for each child. Passwords may be left empty.
    On subsequent connections use that same name/password. First connection
    may take a little longer while assets download.
 
@@ -135,10 +203,11 @@ This command is provided for troubleshooting; the setup has not changed your
 firewall. Luanti's [server hosting guide](https://docs.luanti.org/for-server-hosts/setup/linux/)
 confirms that the server port uses UDP.
 
-On a different Linux laptop, copy the project (including the world save files),
+On a different Linux laptop, copy the project (including `saved-worlds` if you
+want your named saves),
 run `./luanti-worlds/setup-host.sh`, then use the same
 `./luanti-worlds/server.sh` command. All launcher paths are
-resolved relative to their location. Copy the save after stopping the old host,
+resolved relative to their location. Copy saves after stopping the old host,
 so the SQLite files contain a consistent save.
 
 Each new player receives their own robot kit. The two robots already in the

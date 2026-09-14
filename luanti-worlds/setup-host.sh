@@ -41,7 +41,8 @@ if "$check_only"; then
   if [[ -f "$data_dir/games/mineclone2/game.conf" ]]; then
     echo "OK: VoxeLibre"
   else echo "Missing: VoxeLibre"; missing=true; fi
-  if [[ "$(readlink -f -- "$data_dir/worlds/edu_village_river_01" 2>/dev/null || true)" == "$world_dir" ]]; then
+  linked_world="$(readlink -f -- "$data_dir/worlds/edu_village_river_01" 2>/dev/null || true)"
+  if [[ "$linked_world" == "$worlds_dir/sessions/"* && -f "$linked_world/world.mt" ]]; then
     echo "OK: world link"
   else echo "Missing or different: world link"; missing=true; fi
   echo "OK: bundled scenario, LWScratch and xcompat"
