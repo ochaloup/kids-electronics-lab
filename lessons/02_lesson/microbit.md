@@ -172,6 +172,69 @@ while True:
 
 ---
 
+#### 5.3 Akcelerometr
+
+```python
+from microbit import *
+import random
+
+answers = [
+    "Je to jisté",
+    "Rozhodně ano",
+    "Bezpochyby",
+    "Ano, určitě",
+    "Můžeš se na to spolehnout",
+    "Podle mě ano",
+    "S největší pravděpodobností",
+    "Vyhlídky jsou dobré",
+    "Ano",
+    "Všechno nasvědčuje tomu, že ano",
+    "Odpověď je nejasná, zkus to znovu",
+    "Zeptej se znovu později",
+    "Raději ti to teď neřeknu",
+    "Teď to nedokážu předpovědět",
+    "Soustřeď se a zeptej se znovu",
+    "Nespoléhej na to",
+    "Moje odpověď je ne",
+    "Moje zdroje říkají ne",
+    "Vyhlídky nejsou moc dobré",
+    "Velmi pochybné",
+]
+
+while True:
+    display.show("8")
+    if accelerometer.was_gesture("shake"):
+        display.clear()
+        sleep(1000)
+        display.scroll(random.choice(answers))
+```
+
+- protože program pracuje s náhodou, je tu použité přidání nové "znalosti" pro program - `import random`
+  - "random" je anglicky náhoda
+  - `import random` znamená "přidej/nauč se náhodu"
+- "answers" znamená anglicky odpovědi
+- použití `answers = <něco>` znamená "přiřazení do proměnné", můžeme si tak uložit různá data pro další použití v programu
+  - `jmeno = "Petr"` uloží do proměnné pojmenované `jmeno` hodnotu textu `""` `Petr`. Proměnnou jméno od chvíle definice náš program zná a může ji použít.
+  - `cislo = 3` uloží do proměnné pojmenované `cislo` hodnotu čísla `3`
+  - `answers = [ ... ]`, je složitější přiřazení (uložení) do proměnné, kde se ukládá _seznam_ textů. V tomto případě každý řádek je oddělený čárkou `,`
+    a ukládáme tak seznam různých hodnot. V programování se tomu říká "pole" (anglicky `array`).
+  - chceme-li vyvolat jednu hodnotu pole a použít ji přímo, pak použijeme proměnnou a k ní přidáme hranaté závorky `[]` a do nich pak číslo pořadí.
+    Začínáme počítat od nuly. `answers[0]` vrátí `"Je to jisté"`.
+  - můžeme tak "pole" použít třeba v `display.scroll` přímo a příkaz `display.scroll(answers[10])` zobrazí vždý `"Odpověď je nejasná, zkus to znovu"`
+- "accelerometer" je čidlo pohybu a `was_gesture` znamená jestli byl proveden nějaký "pohyb", `shake` znamená zatřást
+  - máme i jiné typy pohybů, které microbit pozná - jsou dokumentované tady: https://python.microbit.org/v/3/reference/accelerometer
+- `random.choice` vybere náhodný prvek z pole `answers` a vrať ho, scroll takto získaný prvek z pole vezme a zaskroluje na displeji
+- co program tedy dělá? 
+  1. `while True` opakuje stále dokola
+  2. na displeji `display` se zobrazí `show` osmička 
+  3. kontroluje, jestli `if` někdo zatřásl `was_gesture("shake") microbitem, když ano, pak
+  4. `clear` vyčistí displej
+  5. čeká `sleep` 1 sekundu
+  6. displey `display` zobrazí `scroll` náhodný `random.choice` nápis ze seznamu `answers`
+
+---
+
+
 ### 6. Diody
 
 Nemusíme jen pracovat s mikrobitem, ale mikrobit může i ovládat, co k němu zapojíme.
@@ -205,6 +268,14 @@ To, co patří pod `while` nebo `if`, musí být odsazené.
 while True:
     if button_a.was_pressed():
         display.show(Image.SMILE)
+```
+
+### Komentář
+
+Když chci něco nechat na obrazovce, ale nechci aby se provádělo
+
+```python
+# toto je zakomentované a není to kód, který by se provedl
 ```
 
 Odsazení říká Pythonu, **které příkazy patří dovnitř podmínky nebo cyklu**.
