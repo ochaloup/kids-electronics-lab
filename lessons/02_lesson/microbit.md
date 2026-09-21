@@ -179,26 +179,26 @@ from microbit import *
 import random
 
 answers = [
-    "Je to jisté",
-    "Rozhodně ano",
-    "Bezpochyby",
-    "Ano, určitě",
-    "Můžeš se na to spolehnout",
-    "Podle mě ano",
-    "S největší pravděpodobností",
-    "Vyhlídky jsou dobré",
+    "Je to jiste",
+    "Rozhodne ano",
+    "Bez pochyby",
+    "Ano, urcite",
+    "Muzes s tim pocitat",
+    "Podle me ano",
+    "Velmi pravdepodobne",
+    "Vypada to dobre",
     "Ano",
-    "Všechno nasvědčuje tomu, že ano",
-    "Odpověď je nejasná, zkus to znovu",
-    "Zeptej se znovu později",
-    "Raději ti to teď neřeknu",
-    "Teď to nedokážu předpovědět",
-    "Soustřeď se a zeptej se znovu",
-    "Nespoléhej na to",
-    "Moje odpověď je ne",
-    "Moje zdroje říkají ne",
-    "Vyhlídky nejsou moc dobré",
-    "Velmi pochybné",
+    "Vse nasvedcuje tomu, ze ano",
+    "Odpoved je nejasna, zkus to znovu",
+    "Zeptej se znovu pozdeji",
+    "Ted ti to radsi nereknu",
+    "Ted se to neda predpovedet",
+    "Soustred se a zeptej se znovu",
+    "Nespolehej na to",
+    "Odpoved zni ne",
+    "Podle vseho ne",
+    "Nevypada to dobre",
+    "Velmi nepravdepodobne",
 ]
 
 while True:
@@ -206,7 +206,7 @@ while True:
     if accelerometer.was_gesture("shake"):
         display.clear()
         sleep(1000)
-        display.scroll(random.choice(answers))
+        display.scroll(random.choice(answers), delay = 120)
 ```
 
 - protože program pracuje s náhodou, je tu použité přidání nové "znalosti" pro program - `import random`
@@ -221,6 +221,7 @@ while True:
   - chceme-li vyvolat jednu hodnotu pole a použít ji přímo, pak použijeme proměnnou a k ní přidáme hranaté závorky `[]` a do nich pak číslo pořadí.
     Začínáme počítat od nuly. `answers[0]` vrátí `"Je to jisté"`.
   - můžeme tak "pole" použít třeba v `display.scroll` přímo a příkaz `display.scroll(answers[10])` zobrazí vždý `"Odpověď je nejasná, zkus to znovu"`
+  - používáme písmena bez háčků a čárek, protože microbit neumí diakritiku správně zobrazovat
 - "accelerometer" je čidlo pohybu a `was_gesture` znamená jestli byl proveden nějaký "pohyb", `shake` znamená zatřást
   - máme i jiné typy pohybů, které microbit pozná - jsou dokumentované tady: https://python.microbit.org/v/3/reference/accelerometer
 - `random.choice` vybere náhodný prvek z pole `answers` a vrať ho, scroll takto získaný prvek z pole vezme a zaskroluje na displeji
@@ -230,7 +231,7 @@ while True:
   3. kontroluje, jestli `if` někdo zatřásl `was_gesture("shake") microbitem, když ano, pak
   4. `clear` vyčistí displej
   5. čeká `sleep` 1 sekundu
-  6. displey `display` zobrazí `scroll` náhodný `random.choice` nápis ze seznamu `answers`
+  6. displey `display` zobrazí `scroll` náhodný `random.choice` nápis ze seznamu `answers`, parameter "delay", zrychluje přehrátí zprávy
 
 ---
 
@@ -270,6 +271,9 @@ while True:
         display.show(Image.SMILE)
 ```
 
+Odsazení říká Pythonu, **které příkazy patří dovnitř podmínky nebo cyklu**.
+
+
 ### Komentář
 
 Když chci něco nechat na obrazovce, ale nechci aby se provádělo
@@ -278,4 +282,3 @@ Když chci něco nechat na obrazovce, ale nechci aby se provádělo
 # toto je zakomentované a není to kód, který by se provedl
 ```
 
-Odsazení říká Pythonu, **které příkazy patří dovnitř podmínky nebo cyklu**.
