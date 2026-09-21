@@ -1,6 +1,44 @@
 # Základy programování s micro:bitem v Pythonu
 
-## 1. První program
+<a href="https://python.microbit.org/v/3/" target="_blank">https://python.microbit.org/v/3/</a>
+
+* [Klávesové zkratky](#klávesové-zkratky)
+* [Slovníček](#slovnek)
+* [Programy](#programy)
+* [Poznámky k programování](#poznmky-k-programovn-v-pythonu)
+
+## Klávesové zkratky
+
+* **CTRL+A** - označit vše
+* **CTRL+C** - zkopírovat označený text do schránky
+* **CTRL+V** - vložit text ze schránky (do místa, kde je kurzor)
+* **CTRL+mezerník** - zobrazení nápovědy po tečce "." v programovacím prostředí 
+
+## Slovníček
+
+| Anglicky | Česky |
+| -------- | ----- |
+| **while**     | **dokud** (cyklus, opakování) |
+| **if**        | **pokud** (podminka, když-tak) |
+| true          | pravda |
+| false         | nepravda  |
+| is            | je  |
+| was           | bylo  |
+| get           | dát (vrať nějakou hodnotu)  |
+| button        | tlačítko  |
+| pres(ed)      | stisknout (stisknuto)  |
+| display       | displej, zobrazit  |
+| show          | ukaž, zobraz  |
+| sleep         | spát  |
+| image         | obrázek  |
+| clear         | čistit  |
+| write         | psát  |
+| read          | číst  |
+
+
+## Programy
+
+### 1. První program - skroluj text
 
 ```python
 from microbit import *
@@ -26,7 +64,7 @@ while True:
 
 ---
 
-## 2. Obrázek a čekání
+### 2. Obrázek a čekání
 
 ```python
 from microbit import *
@@ -47,7 +85,7 @@ while True:
 
 ---
 -
-## 3. Je tlačítko právě zmáčknuté?
+### 3. Je tlačítko právě zmáčknuté?
 
 ```python
 from microbit import *
@@ -69,7 +107,7 @@ Tlačítko umí například:
 
 ---
 
-## 4. Dlouhé zmáčknutí
+### 4. Dlouhé zmáčknutí
 
 ```python
 from microbit import *
@@ -93,11 +131,11 @@ Co program dělá?
 
 ---
 
-## 5. Čidla micro:bitu
+### 5. Čidla micro:bitu
 
 Micro:bit nemá jen tlačítka a displej. Umí také něco měřit.
 
-### Teplota
+### 5.1 Teplota
 
 ```python
 from microbit import *
@@ -113,7 +151,7 @@ while True:
 
 ---
 
-### Mikrofon
+#### 5.2 Mikrofon
 
 ```python
 from microbit import *
@@ -134,7 +172,7 @@ while True:
 
 ---
 
-### Diody
+### 6. Diody
 
 Nemusíme jen pracovat s mikrobitem, ale mikrobit může i ovládat, co k němu zapojíme.
 K tomu slouží PINy.
@@ -149,7 +187,7 @@ while True:
         pin0.write_digital(0)
 ```
 
-## Dvě důležité věci v Pythonu
+## Poznámky k programování v Pythonu
 
 ### Dvojtečka
 
