@@ -1,9 +1,13 @@
 # Luanti programming worlds
 
-The clean world template and installed LWScratch mods live in
-`edu_village_river_01`. Each launch creates a separate playable copy in
-`sessions`. Named snapshots live in `saved-worlds`. Luanti's world directory
-links to a session, so playing does not change the template.
+This folder holds only the generator: the clean world template
+`edu_village_river_01` (scenario mod and configs) and the scripts. Played worlds
+live on each computer, in `edu-village` inside Luanti's user data folder. The
+scripts ask Luanti for that folder (`--info` logs "Detected user path"), so it
+works for Flatpak, native and macOS installs, and respects `LUANTI_USER_PATH`.
+Each launch creates a separate playable copy in `edu-village/sessions`; named
+snapshots live in `edu-village/saved-worlds`. Luanti's world list links to the
+current session. Set `LUANTI_BIN` if Luanti is installed somewhere unusual.
 
 ## Fresh starts and named saves
 
@@ -53,16 +57,9 @@ Saving a running world is refused: stop it first so all SQLite data is saved
 consistently. Only one session can be hosted by these launchers at a time;
 you can still join that host normally as a client.
 
-Your original practice world was preserved as **attempts-2026-09-14** before
-its player data was removed from the template. To revisit it:
-
-```sh
-./luanti-worlds/server.sh attempts-2026-09-14
-```
-
-`sessions` and `saved-worlds` are ignored by Git. Copy them separately when you
-want to transfer progress to another laptop. Sessions accumulate on disk; no
-automatic cleanup is performed. The Python controller is `worlds.py`.
+Worlds stay on the computer where they were played; they are not part of this
+repository. Sessions accumulate on disk; no automatic cleanup is performed.
+The Python controller is `worlds.py`.
 
 ## Play
 
@@ -73,7 +70,7 @@ From the project root:
 ```
 
 This opens **Programming Village - LWScratch** directly, using its dedicated
-configuration. Your existing VoxeLibre Flatpak installation supplies the game.
+configuration. The installed VoxeLibre supplies the game.
 Each invocation starts a fresh session; give the village a moment to appear.
 To explore a saved world in singleplayer:
 
@@ -81,18 +78,16 @@ To explore a saved world in singleplayer:
 ./luanti-worlds/play.sh --saved lesson-1
 ```
 
-The link is:
+The link, relative so it also resolves inside the Flatpak sandbox, is:
 
 ```text
-~/.var/app/org.luanti.luanti/.minetest/worlds/edu_village_river_01
-  -> /path/to/this/project/luanti-worlds/sessions/SESSION_ID
+<Luanti user data>/worlds/edu_village_river_01 -> ../edu-village/sessions/SESSION_ID
 ```
 
-If you move this project, update the link and Flatpak permission with
-`./luanti-worlds/link-world.sh`. The script refuses to replace a different
-existing world. A link already managed by this project is updated to the
-selected session. Flatpak is granted access only to this project's
-`luanti-worlds` folder. Game data and logs are written into the session folder.
+`./luanti-worlds/link-world.sh` creates it. The script refuses to replace a
+different existing world. A link already managed by these scripts is updated to
+the selected session. Luanti never reads this repository: worlds, configs and
+logs are all inside its own user data folder.
 
 Selecting the linked world from Luanti's normal menu continues that linked
 session. To get a fresh world, use the launchers. The scenario enforces
@@ -114,11 +109,14 @@ Copy this project to the laptop, then run these commands from the project root:
 The installer supports Linux hosts. It installs missing system tools through
 APT (Ubuntu/Debian), DNF (Fedora), or Pacman (Arch), using sudo only for system
 packages. Run it as your normal user, **without sudo**. It reuses an installed
-Luanti Flatpak or installs it from Flathub for your user, installs the tested
-[VoxeLibre 0.92.1 release](https://github.com/VoxeLibre/VoxeLibre/releases/tag/0.92.1)
-if no game is installed, and links the world with its Flatpak permission.
-Existing games and worlds are preserved. LWScratch and xcompat are already
-included in this project; they do not need separate installation.
+Luanti (Flatpak or native) or installs the Flatpak from Flathub for your user,
+installs the tested
+[VoxeLibre 0.92.3 release](https://github.com/VoxeLibre/VoxeLibre/releases/tag/0.92.3)
+if no VoxeLibre is installed, installs LWScratch and xcompat at pinned commits
+into Luanti's `mods` folder (`install-mods.sh`), and links the world. Worlds
+enable those mods through `load_mod_*` lines in `world.mt`. Existing games,
+mods and worlds are never replaced. It finishes with `--check` and a robot
+program run in a disposable world (`test-world.sh loop`); setup fails if either fails.
 
 The first setup needs internet access; repeat runs reuse existing installations.
 To inspect prerequisites without making changes:
@@ -127,15 +125,15 @@ To inspect prerequisites without making changes:
 ./luanti-worlds/setup-host.sh --check
 ```
 
-The kids **do not run this host installer**. They only install Luanti and connect.
-
-If the host already has Luanti **as a Flatpak** and VoxeLibre installed, just
-copy the complete project and run:
+To remove what setup installed (recorded in `edu-village/installed-by-setup.txt`;
+pre-existing Luanti, games and mods are not recorded and stay):
 
 ```sh
-./luanti-worlds/link-world.sh
-./luanti-worlds/server.sh
+./luanti-worlds/uninstall.sh            # keeps sessions and saved worlds
+./luanti-worlds/uninstall.sh --worlds   # also deletes them
 ```
+
+The kids **do not run this host installer**. They only install Luanti and connect.
 
 Installation, linking, and starting are separate commands. `setup-host.sh`
 orchestrates the one-time setup; `server.sh` does not install anything.
@@ -153,7 +151,8 @@ Leave this terminal running during the lesson. The server starts a fresh world
 unless you provide a saved-world name, and listens on **UDP port 30001**. Stop it
 with **Ctrl+C**; it saves the world as it shuts down. The laptop must remain on
 and awake. The launcher prints current Ethernet/Wi-Fi addresses. Configuration
-is in `luanti-worlds/server.conf`; logs are in that session's `server.log`.
+is in `luanti-worlds/server.conf`, copied into the session at each start; logs
+are in that session's `server.log`.
 
 You can play on the laptop while the dedicated server runs: open Luanti normally,
 choose **Join Game**, and connect to `127.0.0.1`, port `30001`. Register the name
@@ -181,7 +180,7 @@ and receives a robot kit.
 They do **not** need to install VoxeLibre, LWScratch, xcompat, or this world.
 The server runs the mods and sends the required content automatically, as
 explained in the [Luanti connection guide](https://docs.luanti.org/for-players/getting-started/).
-This laptop currently has Luanti 5.16.1; use that version or a current stable
+This laptop currently has Luanti 5.17.0; use that version or a current stable
 5.x client. Exact version matching is not forced by this server.
 
 The server command detects the laptop's current addresses every time it starts,
@@ -203,12 +202,9 @@ This command is provided for troubleshooting; the setup has not changed your
 firewall. Luanti's [server hosting guide](https://docs.luanti.org/for-server-hosts/setup/linux/)
 confirms that the server port uses UDP.
 
-On a different Linux laptop, copy the project (including `saved-worlds` if you
-want your named saves),
-run `./luanti-worlds/setup-host.sh`, then use the same
-`./luanti-worlds/server.sh` command. All launcher paths are
-resolved relative to their location. Copy saves after stopping the old host,
-so the SQLite files contain a consistent save.
+On a different Linux laptop, clone the project, run
+`./luanti-worlds/setup-host.sh`, then use the same `./luanti-worlds/server.sh`
+command. Each laptop keeps its own worlds.
 
 Each new player receives their own robot kit. The two robots already in the
 village are shared, so coordinate who edits them. When a child places a new
@@ -266,7 +262,8 @@ check counts blocks rather than proving they were placed by a robot.
 
 ## Installed sources
 
-The unmodified third-party source and its licenses are included in `worldmods`:
+`install-mods.sh` downloads the unmodified third-party mods into Luanti's
+`mods` folder:
 
 | Mod | Source | Pinned commit |
 | --- | --- | --- |
@@ -275,12 +272,12 @@ The unmodified third-party source and its licenses are included in `worldmods`:
 
 LWScratch code is LGPL 2.1 and media CC-BY-SA 3.0. xcompat has its own bundled
 license. The scenario code is in `worldmods/edu_village_river/init.lua`.
-The LWScratch manual is bundled at `worldmods/lwscratch/docs/lwscratch.pdf`
-and `worldmods/lwscratch/readme.txt`.
+The LWScratch manual is at `mods/lwscratch/docs/lwscratch.pdf` and
+`mods/lwscratch/readme.txt` in Luanti's user data folder.
 
-The installed runtime checked for this setup was Luanti **5.16.1** and
-VoxeLibre **0.92.1**. These are the actual installed versions, superseding the
-version recorded in the earlier planning note.
+Checked runtime: Luanti **5.17.0** with VoxeLibre **0.92.3**. VoxeLibre 0.92.1
+fails to start on Luanti 5.17 (`vl_hudbars` reads `mcl_gamemode` without
+depending on it); 0.92.3 declares that dependency.
 
 ## Integration check
 
@@ -291,8 +288,8 @@ From the project root, run one check at a time:
 ./luanti-worlds/test-world.sh loop
 ```
 
-Each takes about 40 seconds and uses a fresh copy under `.tests`, bound to
-localhost on port 30099. The playable world is not modified.
+Each takes about 40 seconds and uses a fresh copy under `edu-village/.tests`,
+bound to localhost on port 30099. The playable world is not modified.
 
 `worldmods/edu_village_river/selftest.lua` is an opt-in check for disposable world
 copies, activated by `edu_selftest = true` in their configuration. It compiles

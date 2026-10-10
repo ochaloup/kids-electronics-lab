@@ -2,7 +2,18 @@
 
 Date: 2026-09-14, Europe/Prague.
 
-## Latest follow-up: clean template, fresh sessions, named saves
+## 2026-10-10: worlds and mods live on the computer, not in the repo
+
+This supersedes every path below. The repo holds only the template and scripts.
+Sessions, saves, locks and `.tests` live in `edu-village/` inside Luanti's user
+data folder, which `luanti-env.sh` asks Luanti for (`--info --worldlist path`).
+LWScratch and xcompat are no longer bundled: `install-mods.sh` puts them in
+Luanti's `mods/`, and `world.mt` enables them. `setup-host.sh` records what it
+installs; `uninstall.sh` removes exactly that. VoxeLibre is pinned to 0.92.3
+because 0.92.1 does not start on Luanti 5.17. The old `attempts-2026-09-14`
+save and `archive-template` migration were dropped.
+
+## Earlier follow-up: clean template, fresh sessions, named saves
 
 The user subsequently requested a brand new world on every normal server start,
 with a way to preserve and reopen selected worlds. This supersedes the original

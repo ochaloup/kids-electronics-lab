@@ -14,7 +14,7 @@ fi
 mkdir -p -- "$(dirname -- "$game_dir")"
 stage_dir="$(mktemp -d "$(dirname -- "$game_dir")/.voxelibre-install.XXXXXX")"
 echo "Downloading VoxeLibre $game_version..."
-git clone --depth 1 --branch "$game_version" --single-branch \
+git -c advice.detachedHead=false clone --depth 1 --branch "$game_version" --single-branch \
   https://github.com/VoxeLibre/VoxeLibre.git "$stage_dir/mineclone2"
 if [[ "$(git -C "$stage_dir/mineclone2" rev-parse HEAD)" != "$game_commit" ]]; then
   echo "The downloaded release does not match the pinned commit. Left at: $stage_dir" >&2
