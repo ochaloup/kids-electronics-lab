@@ -32,9 +32,9 @@ def lock(path):
 class WorldStore:
     template_files = {"world.mt", "luanti.conf", "worldmods"}
 
-    def __init__(self, root):
+    def __init__(self, root, template):
         self.root = Path(root).resolve()
-        self.template = self.root / "edu_village_river_01"
+        self.template = Path(template).resolve()
         self.sessions = self.root / "sessions"
         self.saves = self.root / "saved-worlds"
         self.pointer = self.root / ".latest-session"
@@ -139,20 +139,6 @@ class WorldStore:
             with self.stopped(world):
                 return self.snapshot(name, world)
 
-    def archive_template(self, name):
-        """Keep the complete old world before removing its runtime data."""
-        self.check_template()
-        with lock(self.root / ".host.lock"), lock(self.root / ".worlds.lock"), self.stopped(self.template):
-            target = self.snapshot(name, self.template)
-            for entry in self.template.iterdir():
-                if entry.name in self.template_files or entry.name == ".session.lock":
-                    continue
-                if entry.is_dir() and not entry.is_symlink():
-                    shutil.rmtree(entry)
-                else:
-                    entry.unlink()
-            return target
-
     def listing(self):
         print("Named saved worlds:")
         found = False
@@ -174,7 +160,8 @@ class WorldStore:
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parent)
+    parser.add_argument("--root", type=Path, required=True, help="World store inside Luanti's user data folder")
+    parser.add_argument("--template", type=Path, default=Path(__file__).resolve().parent / "edu_village_river_01")
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("new")
     load = commands.add_parser("load")
@@ -182,17 +169,14 @@ def main():
     save = commands.add_parser("save")
     save.add_argument("name")
     save.add_argument("--session", help="Save this previous session instead of the latest one")
-    archive = commands.add_parser("archive-template")
-    archive.add_argument("name")
     commands.add_parser("list")
     commands.add_parser("latest")
     args = parser.parse_args()
-    store = WorldStore(args.root)
+    store = WorldStore(args.root, args.template)
     try:
         if args.command == "new": print(store.create())
         elif args.command == "load": print(store.create(args.name))
         elif args.command == "save": print("Saved: " + str(store.save(args.name, args.session)))
-        elif args.command == "archive-template": print("Preserved old world: " + str(store.archive_template(args.name)))
         elif args.command == "latest": print(store.latest())
         else: store.listing()
     except (WorldError, OSError) as error:

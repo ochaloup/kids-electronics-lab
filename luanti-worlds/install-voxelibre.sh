@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 game_dir="${1:?Usage: install-voxelibre.sh DESTINATION}"
-game_version=0.92.1
-game_commit=e21718f68d682ba1b36292eda545c0d0c0eadc44
+game_version=0.92.3
+game_commit=a523240fb89713ffa6302696e8275bbd7de3bd49
 if [[ -f "$game_dir/game.conf" ]]; then
   echo "VoxeLibre already present: $game_dir"
   exit 0

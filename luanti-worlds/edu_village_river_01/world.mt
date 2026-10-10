@@ -7,3 +7,5 @@ mod_storage_backend = sqlite3
 enable_damage = false
 creative_mode = false
 server_announce = false
+load_mod_lwscratch = true
+load_mod_xcompat = true

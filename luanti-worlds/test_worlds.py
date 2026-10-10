@@ -1,4 +1,4 @@
-"""Persistence checks: fresh starts, snapshot isolation and preservation of attempts."""
+"""Persistence checks: fresh starts outside the template and snapshot isolation."""
 import fcntl
 from contextlib import closing
 from pathlib import Path
@@ -12,10 +12,10 @@ from worlds import WorldError, WorldStore
 class WorldTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
-        self.root = Path(self.temp.name)
-        self.store = WorldStore(self.root)
-        self.template = self.store.template
-        self.template.mkdir()
+        self.root = Path(self.temp.name) / "store"
+        self.template = Path(self.temp.name) / "repo" / "edu_village_river_01"
+        self.store = WorldStore(self.root, self.template)
+        self.template.mkdir(parents=True)
         (self.template / "world.mt").write_text("gameid = mineclone2\n")
         (self.template / "luanti.conf").write_text("enable_damage = false\n")
         (self.template / "worldmods" / "scenario").mkdir(parents=True)
@@ -37,6 +37,8 @@ class WorldTests(unittest.TestCase):
         first = self.store.create()
         self.database(first, "child-built bridge")
         second = self.store.create()
+        self.assertEqual(first.parent, self.root / "sessions")
+        self.assertEqual(set(p.name for p in self.template.parent.iterdir()), {"edu_village_river_01"})
         self.assertNotEqual(first, second)
         self.assertEqual(set(p.name for p in second.iterdir()), WorldStore.template_files)
         self.assertEqual(self.store.latest(), second)
@@ -57,22 +59,11 @@ class WorldTests(unittest.TestCase):
         with self.assertRaises(WorldError):
             self.store.save("bridge-success")
 
-    def test_migration_keeps_complete_attempts_before_cleaning_template(self):
-        self.database(self.template, "original attempts")
-        (self.template / "awards.txt").write_text("original awards")
-        saved = self.store.archive_template("old-attempts")
-        self.assertTrue((saved / "map.sqlite").is_file())
-        self.assertEqual((saved / "awards.txt").read_text(), "original awards")
-        self.assertFalse((self.template / "map.sqlite").exists())
-        self.assertFalse((self.template / "awards.txt").exists())
-        self.assertEqual((self.template / "worldmods" / "scenario" / "init.lua").read_text(), "-- lesson\n")
-
     def test_locked_host_cannot_be_saved_or_cleaned(self):
         self.store.create()
         with (self.root / ".host.lock").open("a") as held:
             fcntl.flock(held, fcntl.LOCK_EX | fcntl.LOCK_NB)
             with self.assertRaises(WorldError): self.store.save("live")
-            with self.assertRaises(WorldError): self.store.archive_template("live-template")
 
     def test_open_database_and_direct_world_lock_prevent_snapshot(self):
         world = self.store.create()
