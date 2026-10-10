@@ -1,16 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
-usage="Usage: install-mods.sh [--check] MODS_DIRECTORY"
+usage="Usage: install-mods.sh [--check] MODS_DIRECTORY MODS_LIST..."
 check_only=false
 if [[ "${1:-}" == --check ]]; then check_only=true; shift; fi
 mods_dir="${1:?$usage}"
-mods=(
-  "lwscratch https://github.com/mt-historical/lwscratch 6815a37bf56b2914a231212588b01d07d9ef7ba3"
-  "xcompat https://github.com/mt-mods/xcompat 758684dac8875d06d8c1565e323ee52c9d4daf7f"
-)
+shift
+(($#)) || { echo "$usage" >&2; exit 1; }
 status=0
-for entry in "${mods[@]}"; do
-  read -r name url commit <<<"$entry"
+while read -r name url commit <&3; do
+  [[ -n "$name" ]] || continue
   target="$mods_dir/$name"
   if [[ -e "$target" || -L "$target" ]]; then
     if [[ "$(git -C "$target" rev-parse HEAD 2>/dev/null || true)" == "$commit" && -f "$target/init.lua" ]]; then
@@ -39,5 +37,5 @@ for entry in "${mods[@]}"; do
   mv -T -- "$stage_dir/$name" "$target"
   rmdir -- "$stage_dir"
   echo "Installed $name $commit: $target"
-done
+done 3< <(sort -u -- "$@")
 exit "$status"

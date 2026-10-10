@@ -19,15 +19,22 @@ for argument in "$@"; do
     *) echo "Usage: $0 [--worlds] [--yes]" >&2; exit 1 ;;
   esac
 done
-source "$worlds_dir/luanti-env.sh"
+source "$worlds_dir/common/luanti-env.sh"
 luanti_require
-source "$worlds_dir/host-session.sh"
+for lock in "$store_dir"/*/.host.lock; do
+  [[ -e "$lock" ]] || continue
+  exec {lock_fd}>"$lock"
+  if ! flock -n "$lock_fd"; then
+    echo "A world is running ($(basename -- "$(dirname -- "$lock")")). Stop it before uninstalling." >&2
+    exit 1
+  fi
+done
 entries=()
 if [[ -f "$install_manifest" ]]; then mapfile -t entries <"$install_manifest"; fi
 echo "Luanti user data folder: $data_dir"
 echo "Will remove:"
 for entry in "${entries[@]}"; do echo "  ${entry#* }"; done
-echo "  $store_dir/.tests (setup check worlds)"
+echo "  $store_dir/*/.tests (self-test worlds)"
 if "$remove_worlds"; then
   echo "  $store_dir (ALL sessions and saved worlds)"
 else
@@ -54,7 +61,7 @@ for ((i = ${#entries[@]} - 1; i >= 0; i--)); do
     *) echo "Unknown manifest entry, left as is: ${entries[i]}" >&2 ;;
   esac
 done
-rm -rf -- "$store_dir/.tests"
+rm -rf -- "$store_dir"/*/.tests
 rm -f -- "$install_manifest"
 if "$remove_worlds"; then
   rm -rf -- "$store_dir"

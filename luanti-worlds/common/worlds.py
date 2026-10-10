@@ -161,7 +161,7 @@ class WorldStore:
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, required=True, help="World store inside Luanti's user data folder")
-    parser.add_argument("--template", type=Path, default=Path(__file__).resolve().parent / "edu_village_river_01")
+    parser.add_argument("--template", type=Path, required=True, help="World folder in this repository")
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("new")
     load = commands.add_parser("load")

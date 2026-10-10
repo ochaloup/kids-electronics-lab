@@ -27,4 +27,4 @@ luanti-worlds/saved-worlds/
 luanti-worlds/.latest-session*
 luanti-worlds/.host.lock
 luanti-worlds/.worlds.lock
-luanti-worlds/__pycache__/
+luanti-worlds/**/__pycache__/

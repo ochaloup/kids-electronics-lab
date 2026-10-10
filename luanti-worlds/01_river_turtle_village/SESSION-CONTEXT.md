@@ -4,11 +4,14 @@ Date: 2026-09-14, Europe/Prague.
 
 ## 2026-10-10: worlds and mods live on the computer, not in the repo
 
-This supersedes every path below. The repo holds only the template and scripts.
-Sessions, saves, locks and `.tests` live in `edu-village/` inside Luanti's user
-data folder, which `luanti-env.sh` asks Luanti for (`--info --worldlist path`).
-LWScratch and xcompat are no longer bundled: `install-mods.sh` puts them in
-Luanti's `mods/`, and `world.mt` enables them. `setup-host.sh` records what it
+This supersedes every path below. The repo holds only the template and scripts;
+since 2026-10-11 the template is this folder (formerly `edu_village_river_01`)
+and the shared scripts serve several worlds (see `../README.md`). Sessions,
+saves, locks and `.tests` live in `edu-worlds/01_river_turtle_village/` inside
+Luanti's user data folder, which `common/luanti-env.sh` asks Luanti for
+(`--info --worldlist path`). LWScratch and xcompat are no longer bundled:
+`mods.txt` pins them, setup puts them in Luanti's `mods/`, and `world.mt`
+enables them. `setup-host.sh` records what it
 installs; `uninstall.sh` removes exactly that. VoxeLibre is pinned to 0.92.3
 because 0.92.1 does not start on Luanti 5.17. The old `attempts-2026-09-14`
 save and `archive-template` migration were dropped.

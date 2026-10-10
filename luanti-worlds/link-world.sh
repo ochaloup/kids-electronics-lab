@@ -2,26 +2,33 @@
 # shellcheck source-path=SCRIPTDIR
 set -euo pipefail
 worlds_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-source "$worlds_dir/luanti-env.sh"
+source "$worlds_dir/common/luanti-env.sh"
+if (($# < 1 || $# > 2)) || [[ "$1" == --help || "$1" == -h ]]; then
+  echo "Usage: $0 WORLD [SESSION_DIR]"
+  echo "Points Luanti's world list at a session; default: the latest, or a new one."
+  echo "Worlds: $(world_names | tr '\n' ' ')"
+  exit 1
+fi
 luanti_require
-source_dir="${1:-}"
+world_select "$1"
+source_dir="${2:-}"
 if [[ -z "$source_dir" ]]; then
   if ! source_dir="$(worlds_py latest 2>/dev/null)"; then
     source_dir="$(worlds_py new)"
   fi
 fi
 source_dir="$(realpath -- "$source_dir")"
-if [[ ! -f "$source_dir/world.mt" || "$(dirname -- "$source_dir")" != "$(realpath -- "$store_dir/sessions")" ]]; then
-  echo "Not a session in $store_dir/sessions: $source_dir" >&2
+if [[ ! -f "$source_dir/world.mt" || "$(dirname -- "$source_dir")" != "$(realpath -- "$world_store/sessions")" ]]; then
+  echo "Not a session in $world_store/sessions: $source_dir" >&2
   exit 1
 fi
-target="$data_dir/worlds/edu_village_river_01"
+target="$data_dir/worlds/$world_name"
 # Relative, so the link also resolves inside a Flatpak sandbox.
-relative="../edu-village/sessions/$(basename -- "$source_dir")"
+managed="../$(basename -- "$store_dir")/$world_name/sessions"
+relative="$managed/$(basename -- "$source_dir")"
 if [[ -L "$target" ]]; then
   previous="$(readlink -- "$target")"
-  if [[ "$previous" != ../edu-village/sessions/* && "$previous" != */luanti-worlds/sessions/* &&
-        "$previous" != */luanti-worlds/edu_village_river_01 ]]; then
+  if [[ "$previous" != "$managed"/* ]]; then
     echo "Refusing to replace a link not managed by these scripts: $target -> $previous" >&2
     exit 1
   fi

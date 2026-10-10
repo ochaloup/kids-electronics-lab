@@ -1,0 +1,2 @@
+lwscratch https://github.com/mt-historical/lwscratch 6815a37bf56b2914a231212588b01d07d9ef7ba3
+xcompat https://github.com/mt-mods/xcompat 758684dac8875d06d8c1565e323ee52c9d4daf7f

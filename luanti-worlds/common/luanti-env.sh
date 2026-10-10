@@ -1,4 +1,4 @@
-# shellcheck shell=bash
+# shellcheck shell=bash disable=SC2034
 # Sourced by the scripts: finds the Luanti runtime and asks it for its own user data folder.
 : "${worlds_dir:?The script must set worlds_dir}"
 luanti_cmd=()
@@ -30,9 +30,26 @@ luanti_paths() {
     echo "Set LUANTI_USER_PATH to that folder and retry." >&2
     return 1
   fi
-  store_dir="$data_dir/edu-village"
-  # shellcheck disable=SC2034
+  store_dir="$data_dir/edu-worlds"
   install_manifest="$store_dir/installed-by-setup.txt"
+}
+
+world_names() {
+  local dir
+  for dir in "$worlds_dir"/*/; do
+    if [[ -f "$dir/world.mt" ]]; then basename -- "$dir"; fi
+  done
+}
+
+world_select() {
+  local name="${1:-}"
+  if [[ -z "$name" || "$name" == */* || ! -f "$worlds_dir/$name/world.mt" ]]; then
+    echo "Unknown world '${name}'. Available worlds: $(world_names | tr '\n' ' ')" >&2
+    exit 1
+  fi
+  world_name="$name"
+  template_dir="$worlds_dir/$name"
+  world_store="$store_dir/$name"
 }
 
 luanti_require() {
@@ -49,6 +66,10 @@ luanti_has_voxelibre() {
   grep -qx mineclone2 <<<"$games"
 }
 
+conf_value() {
+  sed -n "s/^$1 *= *//p" "$2" | tail -n 1
+}
+
 worlds_py() {
-  python3 "$worlds_dir/worlds.py" --root "$store_dir" "$@"
+  python3 "$worlds_dir/common/worlds.py" --root "$world_store" --template "$template_dir" "$@"
 }
