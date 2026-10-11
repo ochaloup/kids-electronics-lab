@@ -1,0 +1,9 @@
+world_name = Gold Digging - micro:bit
+gameid = mineclone2
+backend = sqlite3
+player_backend = sqlite3
+auth_backend = sqlite3
+mod_storage_backend = sqlite3
+enable_damage = false
+creative_mode = false
+server_announce = false
