@@ -31,6 +31,7 @@ if [[ -z "${LUANTI_WORLD_DIR:-}" ]]; then
 fi
 # A sandboxed Luanti cannot read this repository, so the config travels with the world.
 cp -- "$template_dir/server.conf" "$world_dir/server.conf"
+if [[ -f "$template_dir/prestart.sh" ]]; then bash "$template_dir/prestart.sh" "$world_dir/server.conf"; fi
 port="$(conf_value port "$world_dir/server.conf")"
 admin="$(conf_value name "$world_dir/server.conf")"
 echo "Session: $(basename -- "$world_dir")"

@@ -1,3 +1,5 @@
+-- Must stay local: whoever holds it can run anything on the server.
+local ie = core.request_insecure_environment()
 local storage = core.get_mod_storage()
 local spawns = {{x = -16, y = 1, z = 0}, {x = 16, y = 1, z = 0}}
 local spawn_yaws = {-math.pi / 2, math.pi / 2}
@@ -8,9 +10,27 @@ local hill_max = {x = 8, y = 6, z = 8}
 local gold = "mcl_core:stone_with_gold"
 local scores, sent = {}, {}
 
+local serial_path = core.settings:get("edu_gold_serial") or "none"
+local port
+if serial_path ~= "none" and serial_path ~= "" then
+  if not ie then
+    core.log("warning", "[edu_gold] secure.trusted_mods must list edu_gold to write to " .. serial_path)
+  else
+    local err
+    port, err = ie.io.open(serial_path, "w")
+    if not port then core.log("error", "[edu_gold] Cannot open " .. serial_path .. ": " .. err) end
+  end
+end
+
 local function send(line)
   core.log("action", "[edu_gold] " .. line)
   table.insert(sent, line)
+  -- No reopen: a replugged micro:bit loses clocal and opening it could freeze the server.
+  if port and not (port:write(line, "\n") and port:flush()) then
+    port = nil
+    core.log("error", "[edu_gold] Writing to " .. serial_path .. " failed; messages go to the log only")
+    core.chat_send_all("micro:bit se odpojil, zprávy teď jdou jen do logu serveru.")
+  end
 end
 
 -- Applies when opened from the regular menu as well as from play.sh.
