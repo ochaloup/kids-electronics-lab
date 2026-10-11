@@ -8,7 +8,7 @@ all worlds; their helpers live in `common/`.
 | World | About |
 | --- | --- |
 | [01_river_turtle_village](01_river_turtle_village/README.md) | Program LWScratch robots to build a bridge |
-| [02_microbit_gold_digging](02_microbit_gold_digging/README.md) | Planned: Luanti connected to a micro:bit |
+| [02_microbit_gold_digging](02_microbit_gold_digging/README.md) | Mine gold; scores go by radio to the kids' micro:bits |
 
 Played worlds live on each computer, never in this repository: in
 `edu-worlds/<world>/` inside Luanti's user data folder. The scripts ask Luanti
@@ -113,10 +113,13 @@ and, if needed, `mods.txt` (`name url commit` per line, enabled in `world.mt`
 with `load_mod_<name> = true`). Its scenario must support `edu_selftest = true`:
 run a real check, log `[edu_selftest] PASS: ...` and shut the server down.
 `test-world.sh WORLD [MODE]` runs it in a disposable copy on port 30099.
+An optional `prestart.sh` runs before `server.sh` starts Luanti, with the
+session's `server.conf` path as its argument; a failure stops the start.
 
 ## Checks
 
 ```sh
 python3 luanti-worlds/common/test_worlds.py
 ./luanti-worlds/test-world.sh 01_river_turtle_village loop
+./luanti-worlds/test-world.sh 02_microbit_gold_digging
 ```
