@@ -113,8 +113,9 @@ and, if needed, `mods.txt` (`name url commit` per line, enabled in `world.mt`
 with `load_mod_<name> = true`). Its scenario must support `edu_selftest = true`:
 run a real check, log `[edu_selftest] PASS: ...` and shut the server down.
 `test-world.sh WORLD [MODE]` runs it in a disposable copy on port 30099.
-An optional `prestart.sh` runs before `server.sh` starts Luanti, with the
-session's `server.conf` path as its argument; a failure stops the start.
+An optional `prestart.sh` runs before `server.sh` creates the session. Its
+argument is a copy of `server.conf` that becomes the session's config. A
+failure stops the start.
 
 ## Checks
 
@@ -122,4 +123,5 @@ session's `server.conf` path as its argument; a failure stops the start.
 python3 luanti-worlds/common/test_worlds.py
 ./luanti-worlds/test-world.sh 01_river_turtle_village loop
 ./luanti-worlds/test-world.sh 02_microbit_gold_digging
+python3 luanti-worlds/02_microbit_gold_digging/test_serial.py
 ```

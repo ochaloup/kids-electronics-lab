@@ -17,6 +17,11 @@ if ! luanti_has_voxelibre; then
   exit 1
 fi
 source "$worlds_dir/common/host-session.sh"
+# Prestart runs before a session exists, so a failed check leaves no empty session behind.
+conf="$(mktemp)"
+trap 'rm -f -- "$conf"' EXIT
+cp -- "$template_dir/server.conf" "$conf"
+if [[ -f "$template_dir/prestart.sh" ]]; then bash "$template_dir/prestart.sh" "$conf"; fi
 # Path override is only for integration checks.
 if [[ -n "${LUANTI_WORLD_DIR:-}" ]]; then
   world_dir="$LUANTI_WORLD_DIR"
@@ -30,8 +35,7 @@ if [[ -z "${LUANTI_WORLD_DIR:-}" ]]; then
   bash "$worlds_dir/link-world.sh" "$world_name" "$world_dir"
 fi
 # A sandboxed Luanti cannot read this repository, so the config travels with the world.
-cp -- "$template_dir/server.conf" "$world_dir/server.conf"
-if [[ -f "$template_dir/prestart.sh" ]]; then bash "$template_dir/prestart.sh" "$world_dir/server.conf"; fi
+mv -- "$conf" "$world_dir/server.conf"
 port="$(conf_value port "$world_dir/server.conf")"
 admin="$(conf_value name "$world_dir/server.conf")"
 echo "Session: $(basename -- "$world_dir")"

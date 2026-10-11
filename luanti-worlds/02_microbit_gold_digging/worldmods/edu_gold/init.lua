@@ -1,6 +1,5 @@
 -- Must stay local: whoever holds it can run anything on the server.
 local ie = core.request_insecure_environment()
-local storage = core.get_mod_storage()
 local spawns = {{x = -16, y = 1, z = 0}, {x = 16, y = 1, z = 0}}
 local spawn_yaws = {-math.pi / 2, math.pi / 2}
 local scene_min = {x = -24, y = -4, z = -24}
@@ -74,6 +73,14 @@ local function fill(x1, y1, z1, x2, y2, z2, name)
 end
 
 local function build_scene()
+  local vm = VoxelManip()
+  local emin, emax = vm:read_from_map(scene_min, scene_max)
+  local area = VoxelArea:new({MinEdge = emin, MaxEdge = emax})
+  local data = vm:get_data()
+  local air = core.get_content_id("air")
+  for i in area:iterp(scene_min, scene_max) do data[i] = air end
+  vm:set_data(data)
+  vm:write_to_map()
   fill(-22, -4, -22, 22, -3, 22, "mcl_core:stone")
   fill(-22, -2, -22, 22, -1, 22, "mcl_core:dirt")
   fill(-22, 0, -22, 22, 0, 22, "mcl_core:dirt_with_grass")
@@ -97,7 +104,6 @@ local function build_scene()
       placed = placed + 1
     end
   end
-  storage:set_int("scene_version", 1)
   core.set_timeofday(0.5)
   core.log("action", "[edu_gold] Arena ready")
 end
@@ -155,7 +161,8 @@ core.after(0, function()
   core.emerge_area(scene_min, scene_max, function(_, _, remaining)
     if remaining ~= 0 then return end
     core.after(0, function()
-      if storage:get_int("scene_version") ~= 1 then build_scene() end
+      -- Every start is a new round, also when a saved session is loaded.
+      build_scene()
       send("GROUP|" .. (core.settings:get("edu_gold_radio_group") or "7"))
       send("RESET")
       if core.settings:get_bool("edu_selftest", false) then

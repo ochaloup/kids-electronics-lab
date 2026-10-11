@@ -2,7 +2,7 @@
 # Run by server.sh before Luanti starts: picks the gateway micro:bit and proves it accepts writes.
 set -euo pipefail
 
-conf="${1:?Usage: $0 SESSION_SERVER_CONF}"
+conf="${1:?Usage: $0 SERVER_CONF_COPY}"
 dev="${MICROBIT:-}"
 
 fail() {

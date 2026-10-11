@@ -66,5 +66,7 @@ Delší nožička LED (anoda) jde k pinu. Odpor drží proud pinu na pár mA.
   zprávy propadnout.
 - Odpojí-li se brána za běhu, server pokračuje a zprávy píše jen do logu;
   znovu ji připojíte jen restartem serveru.
+- Po resetu brány (tlačítko, výpadek napájení) brána vysílá zase ve skupině 7.
+  Při jiné skupině je potřeba restartovat server, aby jí poslal správné číslo.
 - Mod smí zapisovat na sériový port díky `secure.trusted_mods = edu_gold`
   v `server.conf`; platí jen pro tento server, ne pro `play.sh`.
