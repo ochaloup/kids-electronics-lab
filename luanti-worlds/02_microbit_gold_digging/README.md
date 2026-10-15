@@ -40,8 +40,11 @@ reaguje na koho a jakou barvou, si každé dítě rozhodne samo.
    Skript najde micro:bit sám a brána ukáže fajfku. Při více micro:bitech
    vyberte bránu `MICROBIT=/dev/ttyACM0 ./luanti-worlds/server.sh ...`, bez
    micro:bitu spusťte s `MICROBIT=none` (zprávy jsou jen v `server.log`).
-3. Děti se připojí ke hře (port **30002**), každé dostane železný krumpáč.
-   Do svého micro:bitu nahrají `microbit/starter.py` a dál si ho upravují;
+3. Děti se připojí ke hře (port **30002**) s prázdným inventářem. Zlato jde
+   vytěžit jen železným krumpáčem, takže kolo je závod: strom → pracovní stůl →
+   dřevěný a kamenný krumpáč → železná ruda z balvanů → pec (topí se dřevem) →
+   železný krumpáč → zlato. V aréně je 10 stromů a 40 železných rud, dost pro
+   10 dětí. Do svého micro:bitu nahrají `microbit/starter.py` a dál si ho upravují;
    `microbit/answer.py` je jen jedno možné řešení.
 
 `/gold_score` vypíše pořadí. **Nové kolo** = zastavit server (Ctrl+C) a spustit

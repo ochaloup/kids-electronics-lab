@@ -7,6 +7,10 @@ local scene_max = {x = 24, y = 16, z = 24}
 local hill_min = {x = -8, y = 1, z = -8}
 local hill_max = {x = 8, y = 6, z = 8}
 local gold = "mcl_core:stone_with_gold"
+local iron = "mcl_core:stone_with_iron"
+-- West half only; build_scene mirrors each one to the east so both spawns are equally far.
+local trees = {{x = -18, z = -18}, {x = -18, z = 18}, {x = -7, z = -18}, {x = -7, z = 18}, {x = -13, z = -8}}
+local rocks = {{x = -20, z = -13}, {x = -20, z = 11}, {x = -13, z = -20}, {x = -13, z = 19}, {x = -3, z = -20}}
 local scores, sent = {}, {}
 
 local serial_path = core.settings:get("edu_gold_serial") or "none"
@@ -104,6 +108,19 @@ local function build_scene()
       placed = placed + 1
     end
   end
+  for _, tree in ipairs(trees) do
+    for _, x in ipairs({tree.x, -tree.x}) do
+      fill(x - 1, 3, tree.z - 1, x + 1, 5, tree.z + 1, "mcl_core:leaves")
+      fill(x, 1, tree.z, x, 4, tree.z, "mcl_core:tree")
+    end
+  end
+  -- Each rock is 2x2: stone below, iron on top where it is easy to spot.
+  for _, rock in ipairs(rocks) do
+    for _, x in ipairs({rock.x, -rock.x - 1}) do
+      fill(x, 1, rock.z, x + 1, 1, rock.z + 1, "mcl_core:stone")
+      fill(x, 2, rock.z, x + 1, 2, rock.z + 1, iron)
+    end
+  end
   core.set_timeofday(0.5)
   core.log("action", "[edu_gold] Arena ready")
 end
@@ -123,12 +140,8 @@ core.register_on_joinplayer(function(player)
     home_of[name] = (joined - 1) % 2 + 1
   end
   home(player)
-  if player:get_meta():get_int("edu_gold_kit") == 0 then
-    local leftover = player:get_inventory():add_item("main", "mcl_tools:pick_iron")
-    if not leftover:is_empty() then core.add_item(player:get_pos(), leftover) end
-    player:get_meta():set_int("edu_gold_kit", 1)
-  end
-  core.chat_send_player(name, "Vítej ve Zlatém dole! Vytěž železným krumpáčem co nejvíc zlata. Pořadí: /gold_score")
+  core.chat_send_player(name, "Vítej ve Zlatém dole! Zlato vytěžíš jen železným krumpáčem. "
+    .. "Dřevo najdeš na stromech, železo na balvanech. Pořadí: /gold_score")
 end)
 core.register_on_respawnplayer(function(player) home(player) return true end)
 
@@ -169,6 +182,7 @@ core.after(0, function()
         assert(loadfile(core.get_modpath("edu_gold") .. "/selftest.lua"))({
           scores = scores, sent = sent, on_dig = on_dig, spawns = spawns,
           hill_min = hill_min, hill_max = hill_max, gold = gold,
+          scene_min = scene_min, scene_max = scene_max, iron = iron,
         })
       end
     end)
