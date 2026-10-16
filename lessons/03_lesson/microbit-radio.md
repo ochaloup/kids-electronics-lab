@@ -143,7 +143,7 @@ def set_and_get_score():
     else:
         STORAGE[WHAT] = STORAGE[WHAT] + 1
 
-    ;
+    return STORAGE[WHAT]
 
 
 while True:
@@ -151,6 +151,33 @@ while True:
 
     if message == WHAT:
         display.show(set_and_get_score())
+```
+
+nebo pokročilejší
+
+
+```python
+from microbit import *
+import radio
+
+STORAGE={}
+
+radio.config(group=7)
+radio.on()
+
+def set_and_get_score(message: str):
+    if message not in STORAGE:
+        STORAGE[message] = 1
+    else:
+        STORAGE[message] = STORAGE[message] + 1
+
+    return STORAGE[message]
+
+
+while True:
+    message = radio.receive()
+    if message:
+        display.show(set_and_get_score(message))
 ```
 
 * `WHAT="BLINK"` do proměnné `WHAT` ukládáme slovo (řetězec) `"BLINK"`
@@ -169,3 +196,39 @@ while True:
   * `STORAGE[WHAT] = STORAGE[WHAT] + 1` - vezmi hodnotu z `STORAGE` v krabičce `WHAT` a ulož ji na stejné místo, jen k její hodnotě přidej jedničku (k tomu co tam je přičti jedna a ulož zpět)
   * `return STORAGE[WHAT]` - tomu kdo tě zavolal vrať hodnotu uloženou v "krabičce" `WHAT`. Protože tu pracujeme od začátku s čísly, bude vrácená hodnota nějaké číslo.
 * jméno metody, například `set_and_get_score`, se musí zapsat se závorkami `()`, jinak se metoda nezavolá, správně tedy `set_and_get_score()` pro spuštění metody a získání výsledku (návratové hodnoty)
+
+
+## 5. A co odesílání
+
+```python
+from microbit import *
+import radio
+
+radio.config(group=7)
+radio.on()
+
+score = {}
+players = ["matej", "jakub"]
+
+for player in players:
+    score[player] = 0
+
+
+def send_player(index):
+    player = players[index]
+    score[player] += 1
+    display.show(player[0])
+    sleep(750)
+    display.show(score[player])
+    radio.send(player)
+
+
+while True:
+    if button_a.was_pressed():
+        send_player(0)
+
+    if button_b.was_pressed():
+        send_player(1)
+```
+
+

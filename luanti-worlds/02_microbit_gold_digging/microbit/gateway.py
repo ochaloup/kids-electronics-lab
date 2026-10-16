@@ -1,10 +1,10 @@
-# Gateway micro:bit on the server laptop: forwards each line from USB serial over radio.
+# Gateway micro:bit on the server laptop: sends the player name of each gold message over radio.
 from microbit import *
 import radio
 
 uart.init(115200)
-radio.on()
 radio.config(group=7)
+radio.on()
 buffer = b""
 
 while True:
@@ -21,8 +21,9 @@ while True:
                     display.scroll(group, wait=False)
                 elif text == "PING":
                     display.show(Image.YES)
-                elif text:
-                    radio.send(text)
+                elif text.startswith("GOLD|"):
+                    # Example: "GOLD|zeleny|3" from the server goes out as "zeleny".
+                    radio.send(text.split("|")[1])
                     display.set_pixel(2, 2, 0 if display.get_pixel(2, 2) else 9)
             except ValueError:
                 display.show(Image.NO)

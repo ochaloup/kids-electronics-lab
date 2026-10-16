@@ -20,12 +20,10 @@ kids' micro:bits (microbit/starter.py, microbit/answer.py)
 
 | Message | Meaning |
 | --- | --- |
-| `GOLD\|zeleny\|3` | player `zeleny` dug gold and has score 3 |
-| `RESET` | the server started a new round, all scores are 0 |
+| `zeleny` | player `zeleny` dug one gold |
 
-To split a message: `casti = zprava.split("|")`, then `casti[1]` is the player
-and `int(casti[2])` the score. Scores are kept per player name. Each kid
-decides who to react to and with which colour.
+The micro:bit counts the gold itself, e.g. `score[player] = score.get(player, 0) + 1`.
+Each kid decides who to react to and with which colour.
 
 ## Start
 
@@ -54,7 +52,8 @@ decides who to react to and with which colour.
    `microbit/answer.py` is just one possible solution.
 
 `/gold_score` prints the standings. **New round** = stop the server (Ctrl+C)
-and start it again: the world is fresh and the micro:bits receive `RESET`.
+and start it again: the world is fresh. Kids press the reset button on their
+micro:bit to start counting from zero.
 
 The radio group is set in `server.conf` (`edu_gold_radio_group`). The server
 sends it to the gateway at start. Kids must use the same number in
@@ -72,7 +71,8 @@ to a few mA.
 
 ## Limits
 
-- Radio reaches about one room, and messages can get lost. `display.scroll`
+- Radio reaches about one room, and messages can get lost, so a micro:bit
+  count can be lower than `/gold_score`. `display.scroll`
   without `wait=False` blocks, so messages may be missed while text scrolls.
 - If the gateway is unplugged while running, the server keeps going and writes
   messages to the log only. Reconnecting needs a server restart.
