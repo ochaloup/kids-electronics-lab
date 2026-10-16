@@ -42,7 +42,7 @@ decides who to react to and with which colour.
    `PING` (the gateway shows a tick) and passes the device to the mod. With
    several micro:bits, pick the gateway with
    `MICROBIT=/dev/ttyACM0 ./luanti-worlds/server.sh ...`. Without a micro:bit,
-   start with `MICROBIT=none` (messages go to `server.log` only).
+   start with `MICROBIT=none` (messages go to `server.log` only, possibly `tail -f ~/.var/app/org.luanti.luanti/.minetest/worlds/02_microbit_gold_digging/server.log`).
 3. Kids join the game (port **30002**) with an empty inventory. Gold can only be
    dug with an iron pickaxe, so each round is a race:
 

@@ -125,3 +125,33 @@ python3 luanti-worlds/common/test_worlds.py
 ./luanti-worlds/test-world.sh 02_microbit_gold_digging
 python3 luanti-worlds/02_microbit_gold_digging/test_serial.py
 ```
+
+## Updating Luanti on Linux
+
+Installation: 
+
+```bash
+flatpak install flathub org.luanti.luanti
+flatpak run org.luanti.luanti
+```
+
+To update
+
+```bash
+flatpak update org.luanti.luanti
+```
+
+World are saved in
+
+`~/.var/app/org.luanti.luanti/.minetest/worlds/testing`
+
+More data folders for luanti/minetest are:
+
+* `~/.local/share/flatpak/`
+* `/var/lib/flatpak/`
+
+Player data at `~/.var/app/org.luanti.luanti/.minetest/worlds/<world-name>/doc.mt`
+
+Documentation: https://docs.luanti.org/for-server-hosts/database-backends/ and https://github.com/luanti-org/luanti/blob/master/doc/world_format.md#files
+
+
