@@ -1,75 +1,83 @@
 # 02 micro:bit gold digging
 
-**Gold Digging - micro:bit**: hráči v uzavřené aréně těží zlato z kopce
-(36 bloků `mcl_core:stone_with_gold`). Každé vytěžené zlato zvýší skóre hráče
-a server pošle zprávu do micro:bitů. Každé dítě si programuje vlastní micro:bit,
-který na zprávy reaguje displejem nebo LEDkami. Se serverem děti nic nedělají.
+**Gold Digging - micro:bit**: players dig gold out of a hill in a closed arena
+(36 `mcl_core:stone_with_gold` blocks). Each gold block raises the player's
+score, and the server sends a message to the micro:bits. Every kid programs
+their own micro:bit to react with the display or LEDs. Kids never touch the
+server.
 
 ```
 Luanti server (mod edu_gold)
-    │ USB kabel, sériová linka /dev/ttyACM0
+    │ USB cable, serial line /dev/ttyACM0
     ▼
-brána: micro:bit u serveru (microbit/gateway.py)
-    │ rádio, skupina 7
+gateway: micro:bit at the server (microbit/gateway.py)
+    │ radio, group 7
     ▼
-micro:bity dětí (microbit/starter.py, microbit/answer.py)
+kids' micro:bits (microbit/starter.py, microbit/answer.py)
 ```
 
-## Zprávy, které micro:bity dětí dostávají
+## Messages the kids' micro:bits receive
 
-| Zpráva | Význam |
+| Message | Meaning |
 | --- | --- |
-| `GOLD\|zeleny\|3` | hráč `zeleny` vytěžil zlato a má skóre 3 |
-| `RESET` | server začal nové kolo, všechna skóre jsou 0 |
+| `GOLD\|zeleny\|3` | player `zeleny` dug gold and has score 3 |
+| `RESET` | the server started a new round, all scores are 0 |
 
-Rozdělení: `casti = zprava.split("|")`, pak `casti[1]` je hráč a
-`int(casti[2])` skóre. Skóre se počítá zvlášť pro každé jméno hráče; kdo
-reaguje na koho a jakou barvou, si každé dítě rozhodne samo.
+To split a message: `casti = zprava.split("|")`, then `casti[1]` is the player
+and `int(casti[2])` the score. Scores are kept per player name. Each kid
+decides who to react to and with which colour.
 
-## Spuštění
+## Start
 
-1. Do micro:bitu brány nahrajte `microbit/gateway.py` přes
-   [python.microbit.org](https://python.microbit.org/v/3) a zavřete záložku
-   editoru (drží USB a server by se k micro:bitu nedostal).
-2. Připojte bránu k notebooku se serverem a spusťte:
+1. Flash `microbit/gateway.py` to the gateway micro:bit via
+   [python.microbit.org](https://python.microbit.org/v/3), then close the editor
+   tab. The tab holds the USB port and the server could not reach the micro:bit.
+2. Plug the gateway into the server laptop and run:
 
    ```sh
    ./luanti-worlds/server.sh 02_microbit_gold_digging
    ```
 
-   Skript najde micro:bit sám a brána ukáže fajfku. Při více micro:bitech
-   vyberte bránu `MICROBIT=/dev/ttyACM0 ./luanti-worlds/server.sh ...`, bez
-   micro:bitu spusťte s `MICROBIT=none` (zprávy jsou jen v `server.log`).
-3. Děti se připojí ke hře (port **30002**) s prázdným inventářem. Zlato jde
-   vytěžit jen železným krumpáčem, takže kolo je závod: strom → pracovní stůl →
-   dřevěný a kamenný krumpáč → železná ruda z balvanů → pec (topí se dřevem) →
-   železný krumpáč → zlato. V aréně je 10 stromů a 40 železných rud, dost pro
-   10 dětí. Do svého micro:bitu nahrají `microbit/starter.py` a dál si ho upravují;
-   `microbit/answer.py` je jen jedno možné řešení.
+   `server.sh` first runs `prestart.sh`. It finds the micro:bit, sends it
+   `PING` (the gateway shows a tick) and passes the device to the mod. With
+   several micro:bits, pick the gateway with
+   `MICROBIT=/dev/ttyACM0 ./luanti-worlds/server.sh ...`. Without a micro:bit,
+   start with `MICROBIT=none` (messages go to `server.log` only).
+3. Kids join the game (port **30002**) with an empty inventory. Gold can only be
+   dug with an iron pickaxe, so each round is a race:
 
-`/gold_score` vypíše pořadí. **Nové kolo** = zastavit server (Ctrl+C) a spustit
-znovu: svět je čerstvý a micro:bity dostanou `RESET`.
+   tree → crafting table → wooden and stone pickaxe → iron ore from the rocks →
+   furnace (fuelled by wood) → iron pickaxe → gold
 
-Číslo rádiové skupiny je v `server.conf` (`edu_gold_radio_group`), server ho
-při startu pošle bráně. Děti musí mít stejné číslo v `radio.config(group=7)`.
+   The arena has 10 trees and 40 iron ores, enough for 10 kids. Kids flash
+   `microbit/starter.py` to their micro:bit and change it from there.
+   `microbit/answer.py` is just one possible solution.
 
-## LEDky
+`/gold_score` prints the standings. **New round** = stop the server (Ctrl+C)
+and start it again: the world is fresh and the micro:bits receive `RESET`.
+
+The radio group is set in `server.conf` (`edu_gold_radio_group`). The server
+sends it to the gateway at start. Kids must use the same number in
+`radio.config(group=7)`.
+
+## LEDs
 
 ```
-P0 → odpor 220–330 Ω → zelená LED → GND
-P1 → odpor 220–330 Ω → modrá LED → GND
+P0 → 220–330 Ω resistor → green LED → GND
+P1 → 220–330 Ω resistor → blue LED → GND
 ```
 
-Delší nožička LED (anoda) jde k pinu. Odpor drží proud pinu na pár mA.
+The longer LED leg (anode) goes to the pin. The resistor keeps the pin current
+to a few mA.
 
-## Omezení
+## Limits
 
-- Rádio dosáhne zhruba na jednu místnost; zprávy se mohou ztratit.
-  `display.scroll` bez `wait=False` blokuje a během posouvání mohou další
-  zprávy propadnout.
-- Odpojí-li se brána za běhu, server pokračuje a zprávy píše jen do logu;
-  znovu ji připojíte jen restartem serveru.
-- Po resetu brány (tlačítko, výpadek napájení) brána vysílá zase ve skupině 7.
-  Při jiné skupině je potřeba restartovat server, aby jí poslal správné číslo.
-- Mod smí zapisovat na sériový port díky `secure.trusted_mods = edu_gold`
-  v `server.conf`; platí jen pro tento server, ne pro `play.sh`.
+- Radio reaches about one room, and messages can get lost. `display.scroll`
+  without `wait=False` blocks, so messages may be missed while text scrolls.
+- If the gateway is unplugged while running, the server keeps going and writes
+  messages to the log only. Reconnecting needs a server restart.
+- After a gateway reset (button, power loss) the gateway is back on group 7.
+  With another group, restart the server so it sends the right number.
+- The mod may write to the serial port because of
+  `secure.trusted_mods = edu_gold` in `server.conf`. This applies only to this
+  server, not to `play.sh`.

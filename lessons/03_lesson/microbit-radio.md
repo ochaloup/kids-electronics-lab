@@ -25,6 +25,8 @@ První část na [Základy programování s micro:bitem v Pythonu](../02_lesson/
 | counter    | počítadlo          |
 | storage    | skladiště          |
 | return     | vrať               |
+| in         | v, unvitř          |
+| not        | (zápor), ne        |
 
 ----
 
@@ -123,6 +125,8 @@ while True:
 
 ## 4. Ukládání do objektu a metody
 
+"Program se vším všudy"
+
 ```python
 from microbit import *
 import radio
@@ -139,7 +143,7 @@ def set_and_get_score():
     else:
         STORAGE[WHAT] = STORAGE[WHAT] + 1
 
-    return STORAGE[WHAT]
+    ;
 
 
 while True:
@@ -149,4 +153,19 @@ while True:
         display.show(set_and_get_score())
 ```
 
-* TODO...
+* `WHAT="BLINK"` do proměnné `WHAT` ukládáme slovo (řetězec) `"BLINK"`
+  * když pracujeme s řetězcem, vždy používáme výraz v uvozovkách `""`
+  * název proměnné ("kyblíčku", kde je uložena nějaká hodnota) může být jakýko-li - zde je použit výraz `WHAT`, ale může to být `MOJE_NEJAKA_PROMENNA`, nebo třeba `kdojetunejlepsi`, pro název proměnné používáme: velká a malá písmena, podtržítko, čisla a možná ještě něco
+* `STORAGE={}` do proměnné `STORAGE` ukládáme objekt - obálku na další strukturované informace
+  * "objekt" je možná divný termín, můžeme si představit, že je to obálka pro kyblíky do které nacpeme různé věci - další objekty, řetězce, čísla a tak podobně
+  * `{}` označuje prázny objekt - jen prázdnou obálku
+* `def set_and_get_score()` je vytvoření metody nebo funkce, která něco udělá a můžeme ji použít (zavolat) na různých místech
+  * pracujeme zde zase s odsazením - je třeba aby `def` bylo uvedeno hned u kraje programu, vše co je odsazeno dále (`if`, `else`, `return`) je vykonáno v rámci metody, co začíná zase u kraje je už jiná část programu (nepatří do definice metody)
+  * metoda může být pojmenována jak chceme (stejně jako proměnná), ale Python potřebuje vědět, že je to metoda a tak je tu povinné napsat `def` a `()` a `:`, tedy třeba `def cokoli():`
+* `if/else` říká když je něco pravda tak udělej něco, když to není pravda, tak udělej něco jiného; `return` říká vrať nějaký výsledek z metody - výsledek se pak použije třeba pro uložení do proměnné nebo se zobrazí na displeji (`display.show(nazev_metody())`)
+  * `if WHAT not in STORAGE:` lze přečíst jako anglickou větu - když obsah proměnné `WHAT` není uložen v objektu (obálce) `STORAGE` (v tomto případě když není v `STORAGE` hodnota řetězce `BLINK`) potom něco udělej
+    * "potom" je zapsáno dvojtečkou `:`
+  * `STORAGE[WHAT] = 1` znamená uložení hodnoty jedna (`1`) do krabičky hodnoty `WHAT` - tedy `"BLINK"` "krabička" v "obálce" `STORAGE` bude obsahovat hodnotu 1
+  * `STORAGE[WHAT] = STORAGE[WHAT] + 1` - vezmi hodnotu z `STORAGE` v krabičce `WHAT` a ulož ji na stejné místo, jen k její hodnotě přidej jedničku (k tomu co tam je přičti jedna a ulož zpět)
+  * `return STORAGE[WHAT]` - tomu kdo tě zavolal vrať hodnotu uloženou v "krabičce" `WHAT`. Protože tu pracujeme od začátku s čísly, bude vrácená hodnota nějaké číslo.
+* jméno metody, například `set_and_get_score`, se musí zapsat se závorkami `()`, jinak se metoda nezavolá, správně tedy `set_and_get_score()` pro spuštění metody a získání výsledku (návratové hodnoty)
